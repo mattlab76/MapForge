@@ -1,0 +1,676 @@
+{
+  "id": "lbase_inbound_ssdg.Lbase_SSDG_Inbound.v1",
+  "title": "Lbase_SSDG_Inbound",
+  "systemId": "lbase",
+  "directionRole": {
+    "fixedSide": "destination"
+  },
+  "fixedFields": [
+    {
+      "path": "Write_Interface.Shipment.identify_Map_Name#Shipment",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.MetaDaten.FileNameLBase",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Reference",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Searchstring",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Organization_Id",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Product",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Delivery_Term",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Pickup_Date_From",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Pickup_Date_To",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Delivery_Date_From",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Delivery_Date_To",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.C_O_D_Type",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.C_O_D_Code",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.C_O_D_Expense_Code",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.C_O_D_Value",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.C_O_D_Currency",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Cross_Dock_ID",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Type",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Pickup_Code",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Delivery_Code",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Goods_Value",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Goods_Value_Currency",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Customs_ID",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Address.identify_Map_Name#Shipment_Address",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Address.Address_Type",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Address.Address_ID",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Address.External_Address_ID",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Address.Reference_To_Address",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Address.Name1",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Address.Name2",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Address.Street1",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Address.Street2",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Address.ZIP_Code",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Address.Location",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Address.Country",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Address.Interational_Location_Number",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Address.clear_Actual_Map_Shipment_Address",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Text.identify_Map_Name#Shipment_Text",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Text.Text_Type",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Text.Text",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Text.clear_Actual_Map_Shipment_Text",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Notes.identify_Map_Name#Shipment_Notes",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Notes.Group_Name",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Notes.System_Code",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Notes.Note_Type",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Notes.Format_Type",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Notes.Additional_information",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Notes.clear_Actual_Map_Shipment_Notes",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Attribute.identify_Map_Name#Shipment_Attribute",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Attribute.Additional_Attribute",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Attribute.Additional_Attribute_Value",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Attribute.clear_Actual_Map_Shipment_Attribute",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.clear_Actual_Map_Shipment",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.identify_Map_Name#Position",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Level",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Quantity",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Packaging_ID",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Marks_No",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Goods_Description",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Gross_Weight_kg",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Net_Weight_kg",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Volume_cbm",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Lenght_m",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Width_m",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Height_m",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods_Class",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Article_Number",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Packaging_ID_long",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Chassis_Number",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Loading_Meter",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Barcode",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Barcode_long",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Barcode_long_Qualifier",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.clear_Actual_Map_Position",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Position_Text.identify_Map_Name#Position_Text",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Position_Text.POS_Texttype",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Position_Text.POS_Text",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Position_Text.clear_Actual_Map_Position_Text",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Position_Remarks.identify_Map_Name#Position_Remark",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Position_Remarks.Remark_Text",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Position_Remarks.clear_Actual_Map_Position_Remarks",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.POS_Attribute.identify_Map_Name#POS_Attribute",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.POS_Attribute.POS_Additional_Attribute",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.POS_Attribute.POS_Additional_Attribute_Value",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.POS_Attribute.clear_Actual_Map_POS_Attribute",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.identify_Map_Name#Dangerous_Goods",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Dangerous_Goods_ID",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Dangerous_goods_Class",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.UNNR",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Carriage_Catergory",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Tradename_Chem_Tech",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Measure_Unit",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Gross_Mass",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Net_Mass",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Volume",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.In_For_Limited_Amount",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.In_For_Wastage",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.In_For_Exception",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.In_For_Empties",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Dangerous_Goods_Type",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Official_Denomination",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Dangerous_Goods_Factor",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Dangerous_Goods_Points",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Dangerous_Goods_Version",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Packaging_Group",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Classification_Code",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Packaging",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Dangerous_Goods_Slip_Exemplary",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Addition2",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.Tunnel_Code",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "path": "Write_Interface.Shipment.Shipment_Position.Dangerous_Goods.clear_Actual_Map_Dangerous_Goods",
+      "type": "String",
+      "min": 0,
+      "max": 1
+    }
+  ]
+}

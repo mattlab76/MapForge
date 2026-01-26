@@ -619,118 +619,15 @@ function InboundRubricSection(props: {
 function FieldInput(props: { value: string; onChange: (v: string) => void; suggestions: string[] }) {
   const { value, onChange, suggestions } = props;
   const listId = useMemo(() => `dl-${Math.random().toString(16).slice(2)}`, []);
-  const [pickerOpen, setPickerOpen] = useState(false);
-  const [q, setQ] = useState("");
-
-  const filtered = useMemo(() => {
-    const query = q.trim().toLowerCase();
-    if (!query) return suggestions.slice(0, 200);
-    // light fuzzy: contains
-    const out: string[] = [];
-    for (const s of suggestions) {
-      if (s.toLowerCase().includes(query)) out.push(s);
-      if (out.length >= 200) break;
-    }
-    return out;
-  }, [q, suggestions]);
-
   return (
-    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-      <input
-        className="input"
-        style={{ width: "100%" }}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        list={listId}
-      />
-      <button
-        type="button"
-        className="btn"
-        title="Feld auswählen…"
-        onClick={() => {
-          setQ(value);
-          setPickerOpen(true);
-        }}
-        style={{ padding: "6px 10px" }}
-      >
-        …
-      </button>
+    <>
+      <input className="input" style={{ width: "100%" }} value={value} onChange={(e) => onChange(e.target.value)} list={listId} />
       <datalist id={listId}>
         {suggestions.slice(0, 400).map((s) => (
           <option key={s} value={s} />
         ))}
       </datalist>
-
-      {pickerOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,.35)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-            padding: 20,
-          }}
-          onMouseDown={(e) => {
-            // click outside
-            if (e.target === e.currentTarget) setPickerOpen(false);
-          }}
-        >
-          <div
-            className="card"
-            style={{ width: "min(900px, 95vw)", maxHeight: "80vh", overflow: "hidden", display: "flex", flexDirection: "column" }}
-          >
-            <div className="row" style={{ justifyContent: "space-between", alignItems: "center", gap: 10 }}>
-              <div style={{ fontWeight: 700 }}>Feld auswählen</div>
-              <button className="btn" onClick={() => setPickerOpen(false)}>
-                Schließen
-              </button>
-            </div>
-            <div style={{ marginTop: 10 }}>
-              <input
-                className="input"
-                placeholder="Suchen…"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                autoFocus
-              />
-            </div>
-            <div style={{ marginTop: 10, overflow: "auto", border: "1px solid var(--border)", borderRadius: 10 }}>
-              {filtered.length === 0 ? (
-                <div className="small" style={{ padding: 12 }}>
-                  Keine Treffer.
-                </div>
-              ) : (
-                <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-                  {filtered.map((s) => (
-                    <li key={s}>
-                      <button
-                        type="button"
-                        className="btn"
-                        style={{ width: "100%", textAlign: "left", border: "none", borderRadius: 0, justifyContent: "flex-start" }}
-                        onClick={() => {
-                          onChange(s);
-                          setPickerOpen(false);
-                        }}
-                      >
-                        {s}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            <div className="small" style={{ marginTop: 10 }}>
-              {filtered.length} / {suggestions.length} angezeigt (max 200)
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    </>
   );
 }
 
