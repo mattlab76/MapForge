@@ -1,19 +1,24 @@
-# MapForge
+# MapForge – Systemseiten (v5)
 
-**MapForge** – *Mapping Analysis Studio for Lobster_data*.
+## Navigation / Routen
+- Pro internes System eigene Route:
+  - `/systems/lbase/inbound` / `/systems/lbase/outbound`
+  - `/systems/translogica/...`
+  - `/systems/sap/...`
+  - `/systems/lfs/...`
+  - `/systems/warta/...`
 
-## Features
-- Dark/Light Theme Toggle
-- Mapping Analyse Grid (Source ↔ Destination)
-- Multiple rounds (R01, R02, ...)
-- JSON upload → field path catalog → autocomplete
-- Robust Excel export (no formulas / no validations / no merges)
+## Inbound / Outbound Logik (wie besprochen)
+- **Outbound (Meine Firma → Kunde)**:
+  - **Source** = fix hinterlegte Interface-Definition (intern)
+  - **Destination** = Kunde (XSD import oder manuell)
 
-## Development
+- **Inbound (Kunde → Meine Firma)**:
+  - **Source** = Kunde (XSD import oder manuell)
+  - **Destination** = fix hinterlegte Interface-Definition (intern)
 
-```bash
-npm install
-npm run dev
-```
+## Fixe Interface Definitions
+- `lib/interfaces/*` + Registrierung in `lib/interfaces/registry.ts`
+- Aktuell live: **LBase / Outbound: SFAR-Fahrt (SDG)** (aus Lobster ExportTree CSV)
 
-Open http://localhost:3000
+Andere Systeme sind vorbereitet (Navigation + Routen), aber aktuell ohne Messages.

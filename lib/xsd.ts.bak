@@ -1,0 +1,53 @@
+/**
+ * Very small XSD parser for building a flattened element-path catalog.
+ * Goal: pragmatic autocomplete + mapping support (not full XSD compliance).
+ *
+ * Supported (best-effort):
+ * - xs:element/@name nesting
+ * - xs:complexType/xs:sequence and xs:choice
+ * - maxOccurs/minOccurs are ignored for the path list (paths are still unique)
+ */
+
+export function parseXsdToElementPaths(xsdText: string): string[] {
+  if (typeof window === "undefined") return [];
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xsdText, "application/xml");
+
+  // detect parser errors
+  const err = doc.getElementsByTagName("parsererror")[0];
+  if (err) return [];
+
+  const paths = new Set<string>();
+
+  const isElement = (el: Element) => el.localName === "element";
+
+  const visit = (el: Element, prefix: string) => {
+    // If this node is an xs:element, add it and make it the new prefix.
+    let nextPrefix = prefix;
+    if (isElement(el)) {
+      const name = el.getAttribute("name") ?? "";
+      if (name) {
+        nextPrefix = prefix ? `${prefix}.${name}` : name;
+        paths.add(nextPrefix);
+      }
+    }
+
+    // Walk children and keep collecting nested element paths.
+    for (const child of Array.from(el.children)) {
+      visit(child, nextPrefix);
+    }
+  };
+
+  // Start from global elements if available.
+  const schemaEl = doc.documentElement;
+  const topLevelElements = Array.from(schemaEl.children).filter((c) => c.localName === "element");
+  if (topLevelElements.length) {
+    for (const el of topLevelElements) visit(el as Element, "");
+  } else {
+    // Fallback: traverse whole doc
+    visit(schemaEl, "");
+  }
+
+  return Array.from(paths).sort();
+}

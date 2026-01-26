@@ -1,0 +1,33 @@
+import { MESSAGE as LBASE_SFAR } from "@/lib/interfaces/lbase_outbound_sdg_sfar_fahrt";
+
+export type Direction = "inbound" | "outbound";
+
+export type InterfaceMessage = {
+  id: string;
+  interfaceName: string; // e.g. "LBase outbound SDG Interface"
+  title: string; // message name
+  root: string;
+  /** Flattened field paths for the fixed interface structure (segment tree). */
+  fixedFields: readonly string[];
+  direction: Direction;
+};
+
+export const MESSAGES: readonly InterfaceMessage[] = [LBASE_SFAR] as const;
+
+export function getMessagesByDirection(direction: Direction): InterfaceMessage[] {
+  return MESSAGES.filter((m) => m.direction === direction);
+}
+
+export function getMessage(id: string): InterfaceMessage {
+  const found = MESSAGES.find((m) => m.id === id);
+  return found ?? MESSAGES[0];
+}
+
+export function getDefaultMessageId(direction: Direction): string {
+  const list = getMessagesByDirection(direction);
+  return (list[0] ?? MESSAGES[0]).id;
+}
+
+export function formatMessageLabel(m: InterfaceMessage): string {
+  return `${m.interfaceName} — ${m.title}`;
+}

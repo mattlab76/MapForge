@@ -9,17 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "fast-xml-parser": "4.4.1",
     "next": "14.2.5",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "fast-xml-parser": "4.4.1",
     "zod": "3.23.8"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "20.14.10",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
-    "@tailwindcss/postcss": "^4.0.0",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.41",
     "tailwindcss": "^4.0.0",

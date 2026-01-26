@@ -1,0 +1,51 @@
+# MapForge
+
+MapForge – Mapping Analysis Studio (lokale WebApp) zur Analyse von Mapping-Beziehungen für **Lobster_data**.
+
+## Features
+
+- Dark/Light/System Theme Toggle
+- Mapping Analyse Grid (Source ↔ Destination)
+- Multiple rounds (R01, R02, ...)
+- JSON Upload → Field Path Catalog → Autocomplete (Browser Datalist)
+- Robust Excel export (keine Formeln/Validierungen/Merges)
+
+### Neu (Schritte 1–4)
+
+1. **Persistenz**
+   - Autosave in `localStorage`
+   - **Save JSON** (Export des kompletten States)
+   - **Load JSON** (Restore aus Export)
+
+2. **Excel Import**
+   - `Import Excel…` importiert aus einer `.xlsx` die erste Tabelle in den aktuellen Round
+   - Unterstützte Header: `Source`, `Destination`, `Status`, `Comment` (auch `Quelle/Ziel/Kommentar`)
+
+3. **Status pro Mapping**
+   - Dropdown: `Open`, `In Review`, `Clarified`, `Done`
+
+4. **Deployment-Ready (Intranet)**
+   - Next.js `output: "standalone"`
+   - Optional `BASE_PATH=/mapforge` für Reverse-Proxy Sub-Pfade
+
+## Development
+
+```bash
+npm install
+npm run dev
+```
+
+Open http://localhost:3000
+
+## Deployment
+
+```bash
+# optional, if hosted under a sub-path
+export BASE_PATH=/mapforge
+
+npm install
+npm run build
+npm run start
+```
+
+State ist browser-lokal (localStorage). Für Multi-User/Server-Speicher später: API + DB ergänzen.
