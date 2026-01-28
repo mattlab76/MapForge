@@ -18,22 +18,22 @@ export const RoundSchema = z.object({
 export type Round = z.infer<typeof RoundSchema>;
 
 /**
- * AppState v3:
+ * AppState v4:
  * - direction: inbound/outbound separation (stored & separate localStorage slots)
- * - messageId: fixed interface/message definition (destination fields are derived from it)
- * - sourceFieldCatalog: paths from uploaded source JSON (optional)
- * - rounds: mapping rounds
+ * - messageId: fixed interface/message definition (fixed fields are derived from it)
+ * - otherFieldCatalog: fields for the non-fixed side (from XSD import or manual entry)
+ * - rounds: mapping rounds (Source/Destination strings, depending on direction)
  */
-export const AppStateV3Schema = z.object({
-  version: z.literal(3),
+export const AppStateV4Schema = z.object({
+  version: z.literal(4),
   updatedAt: z.string(),
   direction: z.enum(["inbound", "outbound"]),
   messageId: z.string(),
-  sourceFieldCatalog: z.array(z.string()).default([]),
+  otherFieldCatalog: z.array(z.string()).default([]),
   rounds: z.array(RoundSchema),
   activeRoundId: z.string(),
 });
-export type AppState = z.infer<typeof AppStateV3Schema>;
+export type AppState = z.infer<typeof AppStateV4Schema>;
 
 /** Legacy v2 */
 const AppStateV2Schema = z.object({
@@ -55,18 +55,18 @@ const AppStateV1Schema = z.object({
 });
 
 export function storageKey(direction: Direction): string {
-  return `mapforge_state_v3_${direction}`;
+  return `mapforge_state_v4_${direction}`;
 }
 
 export function createEmptyState(direction: Direction, defaultMessageId?: string): AppState {
   const messageId = defaultMessageId ?? getDefaultMessageId(direction);
   const msg = getMessage(messageId);
   return {
-    version: 3,
+    version: 4,
     updatedAt: new Date().toISOString(),
     direction,
     messageId: msg.id,
-    sourceFieldCatalog: [],
+    otherFieldCatalog: [],
     rounds: [{ id: "R01", rows: [] }],
     activeRoundId: "R01",
   };
@@ -78,16 +78,39 @@ export function normalizeRoundId(n: number): string {
 }
 
 export function validateState(input: unknown, fallbackDirection: Direction = "outbound"): AppState {
-  const v3 = AppStateV3Schema.safeParse(input);
+  const v4 = AppStateV4Schema.safeParse(input);
+  if (v4.success) {
+    const msg = getMessage(v4.data.messageId);
+    return {
+      ...v4.data,
+      messageId: msg.id,
+      otherFieldCatalog: v4.data.otherFieldCatalog ?? [],
+      rounds: v4.data.rounds?.length ? v4.data.rounds : [{ id: "R01", rows: [] }],
+      activeRoundId: v4.data.activeRoundId ?? "R01",
+    };
+  }
+
+  // v3 migration
+  const v3 = z
+    .object({
+      version: z.literal(3),
+      updatedAt: z.string(),
+      direction: z.enum(["inbound", "outbound"]),
+      messageId: z.string(),
+      sourceFieldCatalog: z.array(z.string()).default([]),
+      rounds: z.array(RoundSchema),
+      activeRoundId: z.string(),
+    })
+    .safeParse(input);
   if (v3.success) {
     const msg = getMessage(v3.data.messageId);
-    return {
-      ...v3.data,
-      messageId: msg.id,
-      sourceFieldCatalog: v3.data.sourceFieldCatalog ?? [],
-      rounds: v3.data.rounds?.length ? v3.data.rounds : [{ id: "R01", rows: [] }],
-      activeRoundId: v3.data.activeRoundId ?? "R01",
-    };
+    const migrated = createEmptyState(v3.data.direction, msg.id);
+    migrated.updatedAt = v3.data.updatedAt;
+    // Previous "sourceFieldCatalog" is kept as the "other" side catalog in v4.
+    migrated.otherFieldCatalog = v3.data.sourceFieldCatalog ?? [];
+    migrated.rounds = v3.data.rounds?.length ? v3.data.rounds : migrated.rounds;
+    migrated.activeRoundId = v3.data.activeRoundId ?? migrated.activeRoundId;
+    return migrated;
   }
 
   const v2 = AppStateV2Schema.safeParse(input);
@@ -97,7 +120,7 @@ export function validateState(input: unknown, fallbackDirection: Direction = "ou
     const direction: Direction = (msg as any).direction ?? fallbackDirection;
     const migrated = createEmptyState(direction, msg.id);
     migrated.updatedAt = v2.data.updatedAt;
-    migrated.sourceFieldCatalog = v2.data.sourceFieldCatalog ?? [];
+    migrated.otherFieldCatalog = v2.data.sourceFieldCatalog ?? [];
     migrated.rounds = v2.data.rounds?.length ? v2.data.rounds : migrated.rounds;
     migrated.activeRoundId = v2.data.activeRoundId ?? migrated.activeRoundId;
     return migrated;
@@ -107,7 +130,7 @@ export function validateState(input: unknown, fallbackDirection: Direction = "ou
   if (v1.success) {
     const migrated = createEmptyState(fallbackDirection);
     migrated.updatedAt = v1.data.updatedAt;
-    migrated.sourceFieldCatalog = v1.data.fieldCatalog ?? [];
+    migrated.otherFieldCatalog = v1.data.fieldCatalog ?? [];
     migrated.rounds = v1.data.rounds?.length ? v1.data.rounds : migrated.rounds;
     migrated.activeRoundId = v1.data.activeRoundId ?? migrated.activeRoundId;
     return migrated;

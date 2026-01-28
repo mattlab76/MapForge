@@ -4,7 +4,7 @@ export const MESSAGE = {
   "direction": "outbound",
   "title": "SFAR-Fahrt",
   "root": "SFAR-Fahrt",
-  "destinationFields": [
+  "fixedFields": [
     "SFAR-Fahrt.FAR_FARID",
     "SFAR-Fahrt.FAR_USRID",
     "SFAR-Fahrt.FAR_ORGID",

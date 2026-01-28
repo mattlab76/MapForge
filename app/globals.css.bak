@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root{
   --bg:#0b0f17;
   --panel:#111827;
@@ -17,7 +19,7 @@ body{
   color:var(--text);
 }
 a{color:inherit;text-decoration:none}
-.container{max-width:1200px;margin:0 auto;padding:16px}
+.container{width:100%;max-width:none;margin:0;padding:16px}
 .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px}
 .panel2{background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:12px}

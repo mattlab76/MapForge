@@ -1,5 +1,6 @@
 import type { Direction, MessageDefinition } from "@/lib/types";
 import lbaseOutboundSfar from "@/lib/interfaces/lbase_outbound_sfar_fahrt.json";
+import lbaseInboundSsdg from "@/lib/interfaces/lbase_ssdg_inbound_write_interface.json";
 
 export type SystemDef = { id: string; title: string };
 
@@ -13,6 +14,7 @@ export const SYSTEMS: SystemDef[] = [
 
 const ALL_MESSAGES: MessageDefinition[] = [
   lbaseOutboundSfar as unknown as MessageDefinition,
+  lbaseInboundSsdg as unknown as MessageDefinition,
 ];
 
 // direction determines which side is fixed:

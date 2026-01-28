@@ -7,7 +7,8 @@ export type InterfaceMessage = {
   interfaceName: string; // e.g. "LBase outbound SDG Interface"
   title: string; // message name
   root: string;
-  destinationFields: readonly string[];
+  /** Flattened field paths for the fixed interface structure (segment tree). */
+  fixedFields: readonly string[];
   direction: Direction;
 };
 

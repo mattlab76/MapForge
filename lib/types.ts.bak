@@ -8,6 +8,8 @@ export type MappingRow = {
   destination: string;
   status: MappingStatus;
   comment: string;
+  /** Optional grouping for UI sections (e.g., address rubrics on inbound). */
+  rubric?: string;
 };
 
 export type Round = {
@@ -41,6 +43,9 @@ export type ProjectV3 = {
 
   sourceCatalog: string[];
   destinationCatalog: string[];
+
+  /** UI state: which inbound rubrics are enabled for this project. */
+  rubricEnabled?: string[];
 
   rounds: Round[];
   activeRoundId: string;

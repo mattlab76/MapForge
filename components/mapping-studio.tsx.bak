@@ -7,6 +7,7 @@ import { downloadJson, loadFromLocalStorage, readTextFile, saveToLocalStorage } 
 import { exportStateToExcel } from "@/lib/excel/export";
 import { importMappingExcel } from "@/lib/excel/import";
 import { Direction, formatMessageLabel, getMessage, getMessagesByDirection } from "@/lib/interfaces";
+import { parseXsdToElementPaths } from "@/lib/xsd";
 
 const STATUS_LABEL: Record<MappingRow["status"], string> = {
   open: "Open",
@@ -18,12 +19,14 @@ const STATUS_LABEL: Record<MappingRow["status"], string> = {
 export default function MappingStudio() {
   const [direction, setDirection] = useState<Direction>("outbound");
   const [state, setState] = useState<AppState>(() => createEmptyState("outbound"));
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const importJsonInputRef = useRef<HTMLInputElement | null>(null);
   const importExcelInputRef = useRef<HTMLInputElement | null>(null);
+  const importXsdInputRef = useRef<HTMLInputElement | null>(null);
+
+  const [otherFieldsText, setOtherFieldsText] = useState<string>("");
 
   const message = useMemo(() => getMessage(state.messageId), [state.messageId]);
-  const destinationOptions = useMemo(() => Array.from(new Set(message.destinationFields)).sort(), [message]);
+  const fixedFields = useMemo(() => Array.from(new Set(message.fixedFields)).sort(), [message]);
   const messagesForDirection = useMemo(() => getMessagesByDirection(direction), [direction]);
 
 
@@ -47,11 +50,20 @@ export default function MappingStudio() {
     [state]
   );
 
-  const sourceOptions = useMemo(() => {
-    const set = new Set<string>();
-    for (const f of state.sourceFieldCatalog) set.add(f);
-    return Array.from(set).sort();
-  }, [state.sourceFieldCatalog]);
+  // "Other" side: schema/manual field catalog
+  const otherOptions = useMemo(() => Array.from(new Set(state.otherFieldCatalog ?? [])).sort(), [state.otherFieldCatalog]);
+
+  // Direction semantics:
+  // - Outbound: Fixed interface is SOURCE, and Destination is customer schema/manual (OTHER).
+  // - Inbound:  Source is customer schema/manual (OTHER), and Destination is fixed interface.
+  const sourceOptions = useMemo(() => (direction === "outbound" ? fixedFields : otherOptions), [direction, fixedFields, otherOptions]);
+  const destinationOptions = useMemo(() => (direction === "outbound" ? otherOptions : fixedFields), [direction, fixedFields, otherOptions]);
+  const otherSideLabel = direction === "outbound" ? "Destination" : "Source";
+
+  // Keep textarea in sync
+  useEffect(() => {
+    setOtherFieldsText((state.otherFieldCatalog ?? []).join("\n"));
+  }, [state.otherFieldCatalog, direction]);
 
   function ensureAtLeastOneRow() {
     setState((prev) => {
@@ -122,39 +134,22 @@ export default function MappingStudio() {
     });
   }
 
-  async function onSourceJsonCatalogUpload(file: File) {
+  async function importXsd(file: File) {
     const text = await readTextFile(file);
-    let obj: any;
-    try {
-      obj = JSON.parse(text);
-    } catch {
-      alert("Ungültiges JSON");
+    const paths = parseXsdToElementPaths(text);
+    if (!paths.length) {
+      alert("Konnte aus dem XSD keine Felder ableiten (Parser/Schema evtl. zu komplex). Bitte manuell eintragen.");
       return;
     }
+    setState((prev) => ({ ...prev, otherFieldCatalog: paths }));
+  }
 
-    const paths: string[] = [];
-    const walk = (node: any, prefix: string) => {
-      if (node === null || node === undefined) return;
-      if (Array.isArray(node)) {
-        paths.push(prefix + "[]");
-        node.slice(0, 20).forEach((v, idx) => walk(v, `${prefix}[${idx}]`));
-        return;
-      }
-      if (typeof node === "object") {
-        for (const k of Object.keys(node)) {
-          const next = prefix ? `${prefix}.${k}` : k;
-          paths.push(next);
-          walk(node[k], next);
-        }
-      }
-    };
-
-    walk(obj, "");
-
-    setState((prev) => ({
-      ...prev,
-      sourceFieldCatalog: Array.from(new Set(paths)).sort(),
-    }));
+  function applyManualOtherFields() {
+    const lines = otherFieldsText
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+    setState((prev) => ({ ...prev, otherFieldCatalog: Array.from(new Set(lines)).sort() }));
   }
 
   function exportJsonState() {
@@ -252,19 +247,19 @@ export default function MappingStudio() {
 
             <button
               className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-800"
-              onClick={() => fileInputRef.current?.click()}
-              title="Source-Feldkatalog aus Beispiel-JSON ableiten (optional)"
+              onClick={() => importXsdInputRef.current?.click()}
+              title={`${otherSideLabel}-Felder aus XML Schema (XSD) ableiten`}
             >
-              Source JSON Catalog…
+              {otherSideLabel} XSD…
             </button>
             <input
-              ref={fileInputRef}
+              ref={importXsdInputRef}
               type="file"
-              accept="application/json"
+              accept="application/xml,text/xml,.xsd"
               className="hidden"
               onChange={(e) => {
                 const f = e.target.files?.[0];
-                if (f) void onSourceJsonCatalogUpload(f);
+                if (f) void importXsd(f);
                 e.currentTarget.value = "";
               }}
             />
@@ -323,9 +318,46 @@ export default function MappingStudio() {
           </div>
 
           <div className="text-xs text-zinc-500 dark:text-zinc-400">
-            Autosave: localStorage · Source Felder: {state.sourceFieldCatalog.length} · Destination Felder: {destinationOptions.length} · Rounds: {state.rounds.length}
+            Autosave: localStorage · Fixed Felder: {fixedFields.length} · {otherSideLabel} Felder: {otherOptions.length} · Rounds: {state.rounds.length}
           </div>
         </div>
+      </section>
+
+      <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <div className="text-sm font-semibold">{otherSideLabel} Feldkatalog (XML Schema oder manuell)</div>
+            <div className="text-xs text-zinc-500 dark:text-zinc-400">
+              Outbound: Source = fix (Interface) · Destination = Kunde (Schema/Manuell) · Inbound: umgekehrt.
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-800"
+              onClick={applyManualOtherFields}
+              title="Text übernehmen → Feldkatalog aktualisieren"
+            >
+              Apply
+            </button>
+            <button
+              className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-800"
+              onClick={() => {
+                setOtherFieldsText("");
+                setState((prev) => ({ ...prev, otherFieldCatalog: [] }));
+              }}
+              title="Feldkatalog leeren"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <textarea
+          className="mt-3 min-h-[140px] w-full rounded-xl border border-zinc-200 bg-white p-3 text-sm font-mono dark:border-zinc-800 dark:bg-zinc-950"
+          placeholder={`Ein Feldpfad pro Zeile (z.B. Order.Header.CustomerId)\nOder importiere ein XSD über '${otherSideLabel} XSD…'`}
+          value={otherFieldsText}
+          onChange={(e) => setOtherFieldsText(e.target.value)}
+        />
       </section>
 
       <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
@@ -379,8 +411,8 @@ export default function MappingStudio() {
           <table className="min-w-[900px] w-full text-sm">
             <thead className="bg-zinc-50 text-left dark:bg-zinc-950">
               <tr className="text-xs text-zinc-500 dark:text-zinc-400">
-                <th className="px-3 py-2 w-[40%]">Source</th>
-                <th className="px-3 py-2 w-[40%]">Destination</th>
+                <th className="px-3 py-2 w-[40%]">Source {direction === "outbound" ? "(Fixed)" : "(Schema/Manual)"}</th>
+                <th className="px-3 py-2 w-[40%]">Destination {direction === "outbound" ? "(Schema/Manual)" : "(Fixed)"}</th>
                 <th className="px-3 py-2 w-[12%]">Status</th>
                 <th className="px-3 py-2 w-[8%]"></th>
               </tr>
@@ -453,6 +485,17 @@ export default function MappingStudio() {
             ))}
           </datalist>
         </div>
+
+        <datalist id="sourceCatalog">
+          {sourceOptions.map((opt) => (
+            <option key={opt} value={opt} />
+          ))}
+        </datalist>
+        <datalist id="destinationCatalog">
+          {destinationOptions.map((opt) => (
+            <option key={opt} value={opt} />
+          ))}
+        </datalist>
       </section>
     </div>
   );
