@@ -1,6 +1,5 @@
 "use client";
-
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import type { Direction, MappingRow, MappingStatus, ProjectV3 } from "@/lib/types";
 import { getMessageById, listMessagesFor } from "@/lib/interfaces/registry";
 import { makeEmptyProject, normalizeInterfacePath, normalizeProjectPaths, ProjectV3Schema, storageKey } from "@/lib/storage";
@@ -295,8 +294,29 @@ export function MappingStudio(props: { systemId: string; direction: Direction })
     );
   }
 
-  return (
+  
+  const activeMessage = useMemo(() => (messageId ? getMessageById(messageId) : null), [messageId]);
+return (
     <div>
+
+      {/* Structured Sections (v44 minimal) */}
+      {activeMessage && (
+        <StructuredSections
+          isInbound={isInbound}
+          enabledRubrics={enabledRubrics}
+          addInboundRubric={addInboundRubric}
+          removeInboundRubric={removeInboundRubric}
+          addRubricRow={addRubricRow}
+          updateRow={updateRow}
+          deleteRow={deleteRow}
+          activeRows={activeRound?.rows ?? []}
+          sourceSuggestions={sourceSuggestions}
+          destSuggestions={destSuggestions}
+          activeMessage={activeMessage}
+        />
+      )}
+
+
       <div className="row" style={{ marginBottom: 12 }}>
         <div className="panel row" style={{ flex: 1, justifyContent: "space-between" }}>
           <div className="row">
@@ -305,10 +325,7 @@ export function MappingStudio(props: { systemId: string; direction: Direction })
             <span className="badge">{direction === "inbound" ? "Inbound" : "Outbound"}</span>
           </div>
           <div className="row">
-            <button className="btn primary" onClick={addRow}>
-              + Row
-            </button>
-            <button className="btn" onClick={saveJson}>
+<button className="btn" onClick={saveJson}>
               Save JSON
             </button>
             <label className="btn">
@@ -384,111 +401,196 @@ export function MappingStudio(props: { systemId: string; direction: Direction })
         </div>
       </div>
 
-      <div className="panel" style={{ marginTop: 12 }}>
-        <div className="row" style={{ justifyContent: "space-between", marginBottom: 8 }}>
-          <div className="h2">Mapping Grid</div>
-          <div className="small">
-            Fixed Side: <span className="kbd">{fixedSide}</span>
+      
+
+    </div>
+  );
+}
+
+
+/**
+ * StructuredSections (v44 minimal)
+ */
+function StructuredSections(props: {
+  isInbound: boolean;
+  enabledRubrics: Set<string>;
+  addInboundRubric: (code: InboundRubricCode, destSuggestions: string[]) => void;
+  removeInboundRubric: (code: InboundRubricCode) => void;
+  addRubricRow: (rubric: string, destination?: string) => void;
+  updateRow: (rowId: string, patch: Partial<MappingRow>) => void;
+  deleteRow: (rowId: string) => void;
+  activeRows: MappingRow[];
+  sourceSuggestions: string[];
+  destSuggestions: string[];
+  activeMessage: ReturnType<typeof getMessageById> | null;
+}) {
+  const {
+    isInbound,
+    enabledRubrics,
+    addInboundRubric,
+    removeInboundRubric,
+    addRubricRow,
+    updateRow,
+    deleteRow,
+    activeRows,
+    sourceSuggestions,
+    destSuggestions,
+    activeMessage,
+  } = props;
+
+  const prefix = "Write_Interface.Shipment.";
+  const excluded = new Set([
+    "Write_Interface.Shipment.clear_Actual_Map_Shipment",
+    "Write_Interface.Shipment.identify_Map_Name#Shipment",
+  ]);
+
+  const shipmentFixed = useMemo(() => {
+    const fixed = (activeMessage?.fixedFields ?? []) as string[];
+    return fixed
+      .filter((p) => p.startsWith(prefix))
+      .filter((p) => !excluded.has(p))
+      .filter((p) => {
+        const rest = p.slice(prefix.length);
+        return rest.length > 0 && !rest.includes(".");
+      })
+      .sort((a, b) => a.localeCompare(b));
+  }, [activeMessage]);
+
+  const shipmentRows = useMemo(() => activeRows.filter((r) => r.rubric === "Shipment"), [activeRows]);
+
+  const usedShipmentDestinations = useMemo(() => {
+    const used = new Set<string>();
+    for (const r of shipmentRows) {
+      if (r.destination?.startsWith(prefix)) used.add(r.destination);
+    }
+    return used;
+  }, [shipmentRows]);
+
+  const shipmentOptions = useMemo(
+    () => shipmentFixed.filter((p) => !usedShipmentDestinations.has(p)),
+    [shipmentFixed, usedShipmentDestinations],
+  );
+
+  return (
+    <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 10 }}>
+      <div className="panel">
+        <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, minWidth: 320 }}>
+            <div className="h2">Shipment</div>
+            <select
+              className="input"
+              value=""
+              style={{
+                minWidth: 320,
+                fontFamily:
+                  "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+              }}
+              onChange={(e) => {
+                const dest = e.target.value;
+                if (!dest) return;
+                addRubricRow("Shipment", dest);
+              }}
+            >
+              <option value="">Feld hinzufügen…</option>
+              {shipmentOptions.map((p) => (
+                <option key={p} value={p}>
+                  {p.replace(prefix, "")}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="row" style={{ gap: 8, alignItems: "center" }}>
+            <button className="btn" onClick={() => addRubricRow("Shipment", "")} title="Leere Zeile hinzufügen">
+              + Leere Zeile
+            </button>
           </div>
         </div>
 
-        <table className="grid">
-          <thead>
-            <tr>
-              <th style={{ width: "34%" }}>Source</th>
-              <th style={{ width: "34%" }}>Destination</th>
-              <th style={{ width: "12%" }}>Status</th>
-              <th>Comment</th>
-              <th style={{ width: 40 }}></th>
-            </tr>
-          </thead>
-          <tbody>
-            {ungroupedRows.map((row) => (
-              <tr key={row.id}>
-                <td>
-                  <FieldInput value={row.source} onChange={(v) => updateRow(row.id, { source: v })} suggestions={sourceSuggestions} />
-                </td>
-                <td>
-                  <FieldInput
-                    value={row.destination}
-                    onChange={(v) => updateRow(row.id, { destination: v })}
-                    suggestions={destSuggestions}
-                  />
-                </td>
-                <td>
-                  <select
-                    className="input"
-                    value={row.status}
-                    onChange={(e) => updateRow(row.id, { status: e.target.value as MappingStatus })}
-                  >
-                    {Object.entries(STATUS_LABEL).map(([k, v]) => (
-                      <option key={k} value={k}>
-                        {v}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  <input
-                    className="input"
-                    style={{ width: "100%" }}
-                    value={row.comment}
-                    onChange={(e) => updateRow(row.id, { comment: e.target.value })}
-                  />
-                </td>
-                <td>
-                  <button className="btn danger" onClick={() => deleteRow(row.id)}>
-                    ×
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {ungroupedRows.length === 0 && (
+        <div style={{ marginTop: 10 }}>
+          <table className="table" style={{ width: "100%" }}>
+            <thead>
               <tr>
-                <td colSpan={5} className="small">
-                  Noch keine Rows — klicke <span className="kbd">+ Row</span>.
-                </td>
+                <th>Source</th>
+                <th>Destination</th>
+                <th>Status</th>
+                <th>Comment</th>
+                <th></th>
               </tr>
-            )}
-          </tbody>
-        </table>
-
-        {direction === "inbound" && (
-          <div style={{ marginTop: 14 }}>
-            <div className="row" style={{ justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-              <div className="row" style={{ gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                <span className="small">Adressbereiche (Inbound):</span>
-                <select
-                  className="input"
-                  value=""
-                  onChange={(e) => {
-                    const code = e.target.value as InboundRubricCode;
-                    if (!code) return;
-                    addInboundRubric(code, destSuggestions);
-                  }}
-                >
-                  <option value="">Bereich hinzufügen…</option>
-                  {INBOUND_RUBRICS.filter((r) => !enabledRubrics.has(r.code)).map((r) => (
-                    <option key={r.code} value={r.code}>
-                      {r.uiLabel} — {r.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {error && (
-                <div className="small" style={{ color: "var(--danger)" }}>
-                  {error}
-                </div>
+            </thead>
+            <tbody>
+              {shipmentRows.map((row) => (
+                <tr key={row.id}>
+                  <td>
+                    <input className="input" list="source-suggestions" style={{ width: "100%" }} value={row.source} onChange={(e) => updateRow(row.id, { source: e.target.value })} />
+                  </td>
+                  <td>
+                    <input className="input" list="dest-suggestions" style={{ width: "100%" }} value={row.destination} onChange={(e) => updateRow(row.id, { destination: e.target.value })} />
+                  </td>
+                  <td>
+                    <select className="input" value={row.status} onChange={(e) => updateRow(row.id, { status: e.target.value as MappingStatus })}>
+                      {Object.entries(STATUS_LABEL).map(([k, v]) => (
+                        <option key={k} value={k}>
+                          {v}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td>
+                    <input className="input" style={{ width: "100%" }} value={row.comment ?? ""} onChange={(e) => updateRow(row.id, { comment: e.target.value })} />
+                  </td>
+                  <td>
+                    <button className="btn danger" onClick={() => deleteRow(row.id)}>
+                      ×
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {shipmentRows.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="small">
+                    Noch keine Felder/Rows in Shipment.
+                  </td>
+                </tr>
               )}
-            </div>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="panel">
+        <div className="row" style={{ justifyContent: "space-between", alignItems: "center" }}>
+          <div className="h2">Shipment_Address</div>
+          <button className="btn" disabled title="(reserved)">
+            +
+          </button>
+        </div>
+
+        {isInbound ? (
+          <div style={{ marginTop: 8 }}>
+            <select
+              className="input"
+              value=""
+              onChange={(e) => {
+                const code = e.target.value as InboundRubricCode;
+                if (!code) return;
+                addInboundRubric(code, destSuggestions);
+              }}
+            >
+              <option value="">Adresse hinzufügen…</option>
+              {INBOUND_RUBRICS.filter((r) => !enabledRubrics.has(r.code)).map((r) => (
+                <option key={r.code} value={r.code}>
+                  {r.uiLabel} — {r.label}
+                </option>
+              ))}
+            </select>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 10 }}>
               {INBOUND_RUBRICS.filter((r) => enabledRubrics.has(r.code)).map((rub) => (
                 <InboundRubricSection
                   key={rub.code}
                   rubric={rub}
-                  rows={(activeRound?.rows ?? []).filter((row) => row.rubric === rub.code)}
+                  rows={activeRows.filter((row) => row.rubric === rub.code)}
                   onAddRow={() => addRubricRow(rub.code)}
                   onRemove={() => removeInboundRubric(rub.code)}
                   onUpdateRow={updateRow}
@@ -499,7 +601,23 @@ export function MappingStudio(props: { systemId: string; direction: Direction })
               ))}
             </div>
           </div>
-        )}      </div>
+        ) : (
+          <div className="small" style={{ marginTop: 8 }}>
+            Address-Bereiche sind aktuell nur für Inbound vorgesehen.
+          </div>
+        )}
+      </div>
+
+      <div className="panel"><div className="h2">Shipment_Text</div></div>
+      <div className="panel"><div className="h2">Shipment_Notes</div></div>
+      <div className="panel"><div className="h2">Shipment_Attribute</div></div>
+      <div className="panel">
+        <div className="h2">Shipment_Position</div>
+        <div className="panel2" style={{ marginTop: 10 }}><div className="h2">Position_Text</div></div>
+        <div className="panel2" style={{ marginTop: 10 }}><div className="h2">Position_Remarks</div></div>
+        <div className="panel2" style={{ marginTop: 10 }}><div className="h2">POS_Attribute</div></div>
+        <div className="panel2" style={{ marginTop: 10 }}><div className="h2">Dangerous_Goods</div></div>
+      </div>
     </div>
   );
 }
