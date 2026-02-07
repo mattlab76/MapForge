@@ -1,3 +1,5 @@
 import { redirect } from "next/navigation";
 
-export default function Home(){ redirect("/systems/lbase/outbound"); }
+export default function Home() {
+  redirect("/systems/translogica");
+}

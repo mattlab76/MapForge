@@ -2,24 +2,39 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SYSTEMS } from "@/lib/interfaces/registry";
+import { systems, type SystemCategory } from "@/lib/systems";
 
-export function Sidebar() {
-  const path = usePathname();
+const categoryOrder: SystemCategory[] = ["TMS", "WMS", "ERP"];
+
+export default function Sidebar() {
+  const pathname = usePathname();
+
+  const grouped = categoryOrder
+    .map((cat) => ({
+      category: cat,
+      items: systems.filter((s) => s.category === cat),
+    }))
+    .filter((g) => g.items.length > 0);
+
   return (
-    <div className="panel sidebar">
-      <div className="h2" style={{ marginBottom: 10 }}>Interne Systeme</div>
-      {SYSTEMS.map((s) => {
-        const active = path?.startsWith(`/systems/${s.id}`);
-        return (
-          <Link key={s.id} href={`/systems/${s.id}/outbound`} className={active ? "active" : ""}>
-            {s.title}
-          </Link>
-        );
-      })}
-      <div style={{ marginTop: 10 }} className="small">
-        Pro System eigene Seite/Route — dadurch können wir später system-spezifische Anforderungen separat umsetzen.
-      </div>
-    </div>
+    <nav className="sidebar" style={{ padding: 16 }}>
+      <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 24 }}>MapForge</div>
+      {grouped.map((group) => (
+        <div key={group.category} style={{ marginBottom: 16 }}>
+          <div className="small" style={{ marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>
+            {group.category}
+          </div>
+          {group.items.map((sys) => {
+            const href = `/systems/${sys.slug}`;
+            const active = pathname.startsWith(href);
+            return (
+              <Link key={sys.slug} href={href} className={active ? "active" : undefined}>
+                {sys.name}
+              </Link>
+            );
+          })}
+        </div>
+      ))}
+    </nav>
   );
 }
